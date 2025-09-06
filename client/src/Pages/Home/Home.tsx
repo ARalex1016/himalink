@@ -1,10 +1,13 @@
 // Layout
 import Layout from "../../Layout/Layout";
 
+// Components
+import { Title } from "../../Components/Text";
+
 const Home = () => {
   return (
     <Layout>
-      <div>Home</div>
+      <Title title="Home" />
     </Layout>
   );
 };

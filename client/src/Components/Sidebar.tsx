@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 // Icons
@@ -12,7 +13,7 @@ interface NavItem {
   icon: string;
 }
 
-const Sidebar = () => {
+const Sidebar = memo(() => {
   const { pathname } = useLocation();
 
   const navItems: NavItem[] = [
@@ -40,8 +41,9 @@ const Sidebar = () => {
 
   return (
     <nav className="w-full flex flex-col">
-      {navItems.map((item) => (
+      {navItems.map((item, index) => (
         <Link
+          key={index}
           to={item.link}
           className={`${
             pathname === item.link ? "bg-primary" : "bg-transparent"
@@ -75,6 +77,6 @@ const Sidebar = () => {
       </div>
     </nav>
   );
-};
+});
 
 export default Sidebar;

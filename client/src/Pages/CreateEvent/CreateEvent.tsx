@@ -1,10 +1,13 @@
 // Layout
 import Layout from "../../Layout/Layout";
 
+// Components
+import { Title } from "../../Components/Text";
+
 const CreateEvent = () => {
   return (
     <Layout>
-      <div>CreateEvent</div>
+      <Title title="Create Event" />
     </Layout>
   );
 };
