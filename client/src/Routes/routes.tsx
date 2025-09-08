@@ -7,6 +7,7 @@ import Login from "../Pages/Login/Login";
 import MyEvents from "../Pages/MyEvents/MyEvents";
 import CreateEvent from "../Pages/CreateEvent/CreateEvent";
 import MyBookings from "../Pages/MyBookings/MyBookings";
+import Coordinator from "../Pages/Coordinator/Coordinator";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
   {
     path: "/mybookings",
     element: <MyBookings />,
+  },
+  {
+    path: "/coordinators",
+    element: <Coordinator />,
   },
 ]);
 

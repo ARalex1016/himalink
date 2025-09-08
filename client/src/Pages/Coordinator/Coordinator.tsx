@@ -4,12 +4,12 @@ import Layout from "../../Layout/Layout";
 // Components
 import { Title } from "../../Components/Text";
 
-const Home = () => {
+const Coordinator = () => {
   return (
     <Layout>
-      <Title title="Upcoming Events" />
+      <Title title="Coordinators" />
     </Layout>
   );
 };
 
-export default Home;
+export default Coordinator;
