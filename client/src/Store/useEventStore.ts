@@ -10,7 +10,7 @@ import type { Event } from "../type";
 interface EventStore {
   events: Event[];
   getEvents: () => Promise<void>;
-  getEvent: (eventId: string) => Promise<void>;
+  getEvent: (eventId: string) => Promise<Event | null>;
   createEvent: (event: Event) => Promise<void>;
 }
 
@@ -36,12 +36,13 @@ const useEventStore = create<EventStore>((set) => ({
     try {
       const eventSnap = await getDoc(doc(db, "events", eventId));
 
-      console.log(eventSnap);
-
       if (eventSnap.exists()) {
-        console.log("Event: ", eventSnap.data());
-        // return { id: eventSnap.id, ...eventSnap.data() };
+        const data = eventSnap.data() as Event;
+        return { id: eventSnap.id, ...data };
       }
+
+      // ✅ Always return null if not found
+      return null;
     } catch (error: any) {
       console.log("No such document!");
       throw new Error(error.message);
