@@ -34,6 +34,34 @@
   border-radius: inherit;
 }
 
+.rounded-t-inherit {
+  border-top-right-radius: inherit;
+  border-top-left-radius: inherit;
+}
+
+/* Scroll bar Customization Start */
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px; /* scrollbar height (for horizontal scrollbar) */
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(var(--accent), 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--accent), 0.7);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--accent));
+}
+
+/* Scroll bar Customization End */
+
 /* Sign in with Googole Button CSS Start */
 
 .gsi-material-button {

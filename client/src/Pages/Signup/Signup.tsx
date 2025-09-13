@@ -87,7 +87,7 @@ const Signup = () => {
 
   return (
     <Layout className="flex flex-col">
-      <Title title="Signup" />
+      <Title title="Signup" className="text-center" />
 
       <div className="w-full flex-1 grid place-items-center">
         {/* Sign In Card */}

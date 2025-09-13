@@ -28,6 +28,7 @@ interface AuthStore {
 
 const useAuthStore = create<AuthStore>((set) => ({
   user: null,
+
   setuser: (user: User | null) => set({ user }),
 
   signinWithGoogle: async () => {
@@ -56,7 +57,19 @@ const useAuthStore = create<AuthStore>((set) => ({
     try {
       let res = await createUserWithEmailAndPassword(auth, email, password);
 
-      console.log(res);
+      const firebaseUser = res.user;
+
+      const user: User = {
+        id: firebaseUser.uid,
+        displayName: firebaseUser.displayName || "No Name",
+        email: firebaseUser.email || "No Email",
+        emailVerified: firebaseUser.emailVerified,
+        phoneNumber: firebaseUser.phoneNumber || undefined,
+        providerId: firebaseUser.providerId,
+        photoURL: firebaseUser.photoURL || undefined,
+      };
+
+      set({ user });
     } catch (error: any) {
       throw new Error(error);
     }

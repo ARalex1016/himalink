@@ -13,13 +13,20 @@ const Layout: React.FC<ILayoutProps> = ({ children, className }) => {
   const menuButtonRef = useRef<HTMLImageElement>(null);
 
   return (
-    <div className="w-screen h-[100svh] bg-primary flex flex-col overflow-hidden">
+    <div className="w-screen h-[100svh] bg-primary overflow-hidden flex flex-col">
       <Header menuButtonRef={menuButtonRef} />
 
-      <div className="flex flex-row flex-1">
+      <div className="flex flex-1 relative h-[calc(100svh-var(--menu-height))]">
         <Sidebar menuButtonRef={menuButtonRef} />
 
-        <div className={`flex-1 px-side-spacing ${className}`}>{children}</div>
+        <main
+          className={`flex-1 overflow-y-auto px-side-spacing py-2 ${className}`}
+          style={{
+            width: "100%",
+          }}
+        >
+          {children}
+        </main>
       </div>
     </div>
   );

@@ -21,6 +21,7 @@ import { useUIStore } from "../../Store/useUIStore";
 
 interface HeaderProps {
   menuButtonRef: React.RefObject<HTMLImageElement | null>; // 👈 MenuIcon ref from Header
+  className?: string;
 }
 
 interface DropDownNavProps {
@@ -83,7 +84,7 @@ const DropDownNav = ({
             duration: 1,
             ease: "anticipate",
           }}
-          className="w-1/2 xs:w-64 text-white/80 bg-secondary rounded-lg absolute z-50 top-full right-side-spacing shadow-sm shadow-white/70 flex flex-col overflow-hidden"
+          className="w-3/5 xs:w-64 text-white/80 bg-secondary rounded-lg absolute z-50 top-full right-side-spacing shadow-sm shadow-white/70 flex flex-col overflow-hidden"
         >
           {user && (
             <div className="flex flex-col py-4 px-side-spacing">
@@ -128,7 +129,7 @@ const DropDownNav = ({
   );
 };
 
-const Header = ({ menuButtonRef }: HeaderProps) => {
+const Header = ({ menuButtonRef, className }: HeaderProps) => {
   const { user } = useAuthStore();
 
   const profileButtonRef = useRef<HTMLDivElement>(null);
@@ -138,7 +139,9 @@ const Header = ({ menuButtonRef }: HeaderProps) => {
   const { state: isNavOpen, toggle, close: closeNav } = UseToggle(false);
 
   return (
-    <header className="w-screen h-menu-height bg-secondary flex flex-row items-center relative">
+    <header
+      className={`w-screen h-menu-height bg-secondary flex flex-row items-center sticky top-0 left-0 z-50 ${className}`}
+    >
       {/* Logo */}
       <div className="h-full xs:w-sidebar-width flex-shrink-0 flex flex-row items-center gap-x-3 xs:gap-x-4 pl-side-spacing">
         <BaseIcon

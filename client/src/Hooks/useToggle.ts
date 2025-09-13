@@ -10,7 +10,7 @@ const UseToggle = (initialState: boolean = false) => {
   };
 
   const close = () => {
-    setState(true);
+    setState(false);
   };
 
   return { state, toggle, open, close };

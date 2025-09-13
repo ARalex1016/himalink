@@ -81,6 +81,11 @@ const Sidebar = memo(({ menuButtonRef }: SidebarProps) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [sidebarOpen, closeSidebar, menuButtonRef]);
 
+  // 👇 Close sidebar when pathname changes
+  useEffect(() => {
+    closeSidebar();
+  }, [pathname, closeSidebar]);
+
   return (
     <motion.aside
       ref={sidebarRef}
@@ -98,9 +103,11 @@ const Sidebar = memo(({ menuButtonRef }: SidebarProps) => {
         duration: 0.5,
         ease: "easeInOut",
       }}
-      className="bg-secondary overflow-hidden absolute sm:relative z-40"
+      className="bg-secondary overflow-hidden z-40 absolute sm:relative sm:flex-shrink-0"
       style={{
         height: "calc(100svh - var(--menu-height))",
+        // position: "sticky",
+        // top: "var(--menu-height)",
       }}
     >
       <nav className="flex flex-col w-sidebar-width">
