@@ -9,8 +9,11 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 
+// Utils
+import { getUserDetails } from "../Utils/UserDetails";
+
 // Type
-import type { User } from "../type";
+import type { User, Country } from "../type";
 
 interface ManualSigninData {
   email: string;
@@ -19,7 +22,9 @@ interface ManualSigninData {
 
 interface AuthStore {
   user: User | null;
+  country: Country | null;
   setuser: (user: User | null) => void;
+  setCountry: (country: Country | null) => void;
   signinWithGoogle: () => Promise<void>;
   signinManual: (data: ManualSigninData) => Promise<void>;
   loginManual: (data: ManualSigninData) => Promise<void>;
@@ -28,8 +33,15 @@ interface AuthStore {
 
 const useAuthStore = create<AuthStore>((set) => ({
   user: null,
+  country: {
+    name: "",
+    code: "",
+    currency: "",
+  },
 
   setuser: (user: User | null) => set({ user }),
+
+  setCountry: (country: Country | null) => set({ country }),
 
   signinWithGoogle: async () => {
     try {
@@ -38,12 +50,11 @@ const useAuthStore = create<AuthStore>((set) => ({
       const firebaseUser = res.user;
 
       const user: User = {
-        id: firebaseUser.uid,
+        uid: firebaseUser.uid,
         displayName: firebaseUser.displayName || "No Name",
         email: firebaseUser.email || "No Email",
         emailVerified: firebaseUser.emailVerified,
-        phoneNumber: firebaseUser.phoneNumber || undefined,
-        providerId: firebaseUser.providerId,
+        phone: firebaseUser.phoneNumber || undefined,
         photoURL: firebaseUser.photoURL || undefined,
       };
 
@@ -60,12 +71,11 @@ const useAuthStore = create<AuthStore>((set) => ({
       const firebaseUser = res.user;
 
       const user: User = {
-        id: firebaseUser.uid,
+        uid: firebaseUser.uid,
         displayName: firebaseUser.displayName || "No Name",
         email: firebaseUser.email || "No Email",
         emailVerified: firebaseUser.emailVerified,
-        phoneNumber: firebaseUser.phoneNumber || undefined,
-        providerId: firebaseUser.providerId,
+        phone: firebaseUser.phoneNumber || undefined,
         photoURL: firebaseUser.photoURL || undefined,
       };
 
@@ -82,12 +92,11 @@ const useAuthStore = create<AuthStore>((set) => ({
       const firebaseUser = res.user;
 
       const user: User = {
-        id: firebaseUser.uid,
+        uid: firebaseUser.uid,
         displayName: firebaseUser.displayName || "No Name",
         email: firebaseUser.email || "No Email",
         emailVerified: firebaseUser.emailVerified,
-        phoneNumber: firebaseUser.phoneNumber || undefined,
-        providerId: firebaseUser.providerId,
+        phone: firebaseUser.phoneNumber || undefined,
         photoURL: firebaseUser.photoURL || undefined,
       };
 
@@ -109,21 +118,30 @@ const useAuthStore = create<AuthStore>((set) => ({
 }));
 
 export const initAuthListener = () => {
-  onAuthStateChanged(auth, (firebaseUser) => {
+  onAuthStateChanged(auth, async (firebaseUser) => {
+    const data = await getUserDetails();
+
+    const country: Country = {
+      name: data?.country,
+      code: data?.country_code,
+      currency: data?.currency,
+    };
+
     if (firebaseUser) {
       const user: User = {
-        id: firebaseUser.uid,
+        uid: firebaseUser.uid,
         displayName: firebaseUser.displayName || "No Name",
         email: firebaseUser.email || "No Email",
         emailVerified: firebaseUser.emailVerified,
-        phoneNumber: firebaseUser.phoneNumber || undefined,
-        providerId: firebaseUser.providerId,
+        phone: firebaseUser.phoneNumber || undefined,
         photoURL: firebaseUser.photoURL || undefined,
       };
 
       useAuthStore.getState().setuser(user);
+      useAuthStore.getState().setCountry(country);
     } else {
       useAuthStore.getState().setuser(null);
+      useAuthStore.getState().setCountry(country);
     }
   });
 };

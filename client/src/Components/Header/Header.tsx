@@ -189,7 +189,7 @@ const Header = ({ menuButtonRef, className }: HeaderProps) => {
               className="!invert-0 size-full"
             />
           ) : (
-            <BaseIcon src={AvatarIcon} alt="Avatar" className="invert-90" />
+            <BaseIcon src={AvatarIcon} alt="Avatar" className="invert-25" />
           )}
         </div>
       </div>
