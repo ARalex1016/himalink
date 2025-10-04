@@ -1,6 +1,12 @@
+import { useNavigate } from "react-router-dom";
+
 interface GoogleButtonProps {
   label?: string;
   onClick: () => Promise<void>;
+}
+
+interface BackButtonProps {
+  className?: string;
 }
 
 export const GoogleButton = ({
@@ -41,6 +47,19 @@ export const GoogleButton = ({
         <span className="gsi-material-button-contents">{label}</span>
         <span style={{ display: "none" }}>Sign up with Google</span>
       </div>
+    </button>
+  );
+};
+
+export const BackButton = ({ className }: BackButtonProps) => {
+  const navigate = useNavigate();
+
+  return (
+    <button
+      onClick={() => navigate(-1)}
+      className={`font-medium bg-accent/75 rounded-sm px-2 absolute top-1 left-side-spacing hover:bg-accent ${className}`}
+    >
+      Back
     </button>
   );
 };

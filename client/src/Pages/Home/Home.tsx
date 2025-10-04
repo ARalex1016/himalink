@@ -23,7 +23,7 @@ const Home = () => {
     <Layout>
       <Title title="Upcoming Events" />
 
-      <div className="flex flex-row flex-wrap gap-4">
+      <div className="w-full flex flex-row flex-wrap gap-4 justify-around">
         {events.map((event, index) => {
           return <EventCard key={index} event={event} />;
         })}

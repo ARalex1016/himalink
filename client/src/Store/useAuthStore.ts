@@ -1,5 +1,8 @@
 import { create } from "zustand";
 
+// Components
+import AlertBox from "../Components/AlertBox";
+
 // Firebase
 import { auth, googleProvider } from "../config/firebase";
 import {
@@ -10,7 +13,7 @@ import {
 } from "firebase/auth";
 
 // Utils
-import { getUserDetails } from "../Utils/UserDetails";
+import { getUserDetailsWithIPAPI } from "../Utils/UserDetails";
 
 // Type
 import type { User, Country } from "../type";
@@ -119,29 +122,25 @@ const useAuthStore = create<AuthStore>((set) => ({
 
 export const initAuthListener = () => {
   onAuthStateChanged(auth, async (firebaseUser) => {
-    const data = await getUserDetails();
+    if (!firebaseUser) {
+      const setCountry = useAuthStore.getState().setCountry;
 
-    const country: Country = {
-      name: data?.country,
-      code: data?.country_code,
-      currency: data?.currency,
-    };
+      try {
+        let data = await getUserDetailsWithIPAPI();
 
-    if (firebaseUser) {
-      const user: User = {
-        uid: firebaseUser.uid,
-        displayName: firebaseUser.displayName || "No Name",
-        email: firebaseUser.email || "No Email",
-        emailVerified: firebaseUser.emailVerified,
-        phone: firebaseUser.phoneNumber || undefined,
-        photoURL: firebaseUser.photoURL || undefined,
-      };
-
-      useAuthStore.getState().setuser(user);
-      useAuthStore.getState().setCountry(country);
+        setCountry({
+          name: data.country_name,
+          code: data.country,
+          currency: data.currency,
+        });
+      } catch (error: any) {
+        AlertBox({
+          title: "Error",
+          text: "Error getting your location",
+          icon: "error",
+        });
+      }
     } else {
-      useAuthStore.getState().setuser(null);
-      useAuthStore.getState().setCountry(country);
     }
   });
 };

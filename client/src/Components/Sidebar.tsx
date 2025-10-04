@@ -100,7 +100,7 @@ const Sidebar = memo(({ menuButtonRef }: SidebarProps) => {
       initial={false}
       animate="animate"
       transition={{
-        duration: 0.5,
+        duration: 0.3,
         ease: "easeInOut",
       }}
       className="bg-secondary overflow-hidden z-40 absolute sm:relative sm:flex-shrink-0"

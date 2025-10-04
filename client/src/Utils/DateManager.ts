@@ -28,3 +28,25 @@ export const formatHour = (isoDate?: string | Date): number | "N/A" => {
   hour = hour % 12; // convert 13 -> 1, 20 -> 8, 0 -> 0
   return hour === 0 ? 12 : hour; // replace 0 with 12
 };
+
+export const getDayFromISODate = (dateInput: string | Date): string | null => {
+  // Convert Date to ISO string if needed
+  const date = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
+
+  // Check if date is valid
+  if (isNaN(date.getTime())) {
+    return null;
+  }
+
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
+  return days[date.getUTCDay()]; // use getUTCDay() for UTC or getDay() for local
+};

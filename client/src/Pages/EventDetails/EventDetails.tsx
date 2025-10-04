@@ -4,6 +4,10 @@ import { useParams } from "react-router-dom";
 // Layout
 import Layout from "../../Layout/Layout";
 
+// Components
+import { BackButton } from "../../Components/Button";
+import CurrencyDisplay from "../../Components/CurrencyDisplay";
+
 // Icons
 import LocationIcon from "./../../assets/icons/location.svg";
 import DateIcon from "./../../assets/icons/my-event.svg";
@@ -14,7 +18,13 @@ import { IconText, ClockIcons } from "../../Components/Icon";
 import useEventStore from "../../Store/useEventStore";
 
 // Utils
-import { formatDate, formatTime, formatHour } from "../../Utils/DateManager";
+import {
+  formatDate,
+  formatTime,
+  formatHour,
+  getDayFromISODate,
+} from "../../Utils/DateManager";
+import { capitalizeFirstLetter } from "../../Utils/StringManager";
 
 // Type
 import type { Event } from "../../type";
@@ -27,6 +37,8 @@ const EventDetails = () => {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   // const [error, setError] = useState<string | null>(null);
+
+  console.log(event);
 
   useEffect(() => {
     if (!eventId) return;
@@ -57,7 +69,15 @@ const EventDetails = () => {
   }
 
   return (
-    <Layout className="text-white">
+    <Layout className="text-white mt-6">
+      <BackButton />
+
+      {event?.category && (
+        <div className="bg-accent/75 leading-none py-[2px] rounded-sm px-2 absolute right-side-spacing hover:bg-black">
+          {capitalizeFirstLetter(event?.category)}
+        </div>
+      )}
+
       <img
         src={event?.coverImageURL}
         alt={event?.title}
@@ -65,11 +85,35 @@ const EventDetails = () => {
       />
 
       <div className="py-2 flex flex-col gap-y-2">
+        <IconText src={DateIcon} alt="Date">
+          <span>
+            {event?.date_Time?.startAt
+              ? `${getDayFromISODate(
+                  event.date_Time.startAt.toDate()
+                )}, ${formatDate(event.date_Time.startAt.toDate())}`
+              : "Date not available"}
+          </span>
+        </IconText>
+
         <h2 className="text-lg font-medium line-clamp-1">{event?.title}</h2>
 
-        <IconText src={DateIcon} alt="Date">
-          <span>{formatDate(event?.date_Time?.startAt.toDate())}</span>
+        <IconText src={LocationIcon} alt="Location">
+          {event?.location?.address}
         </IconText>
+
+        <IconText src={UsersGroupIcon} alt="Seats">
+          <span className="font-bold">{event?.seatsAvailable}</span> out of{" "}
+          <span className="font-bold">{event?.capacity}</span> seats left
+        </IconText>
+
+        <p className="text-sms">{event?.shortDescription}</p>
+
+        {event?.ticket?.amount && (
+          <CurrencyDisplay
+            amount={event?.ticket?.amount}
+            fromCur={event?.ticket?.currency}
+          />
+        )}
 
         <IconText
           src={ClockIcons[formatHour(event?.date_Time?.startAt.toDate())]}
@@ -84,36 +128,7 @@ const EventDetails = () => {
         >
           <span>To {formatTime(event?.date_Time?.endAt.toDate())}</span>
         </IconText>
-
-        <IconText src={LocationIcon} alt="Location">
-          {event?.location?.address}
-        </IconText>
-
-        <IconText src={UsersGroupIcon} alt="Seats">
-          <span className="font-bold">{event?.seatsAvailable}</span> out of{" "}
-          <span className="font-bold">{event?.capacity}</span> seats left
-        </IconText>
-
-        <div className="flex flex-row justify-around">
-          <p className="text-accent/75 text-xl font-medium">
-            {event?.ticket?.amount}
-            {event?.ticket?.currency}
-          </p>
-
-          <p className="font-bold">=</p>
-
-          <p className="text-accent/75 text-xl font-medium">
-            {event?.ticket?.amount}
-            {event?.ticket?.currency}
-          </p>
-        </div>
-
-        <button className="text-white/75 text-lg bg-accent/75 rounded-lg px-4 hover:bg-accent hover:text-white transition-all duration-300 py-[2px]">
-          View Details
-        </button>
       </div>
-
-      <p className="text-sms">{event?.shortDescription}</p>
     </Layout>
   );
 };

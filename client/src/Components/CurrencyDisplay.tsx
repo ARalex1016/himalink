@@ -14,7 +14,10 @@ interface AmountWithCurrencyProps {
   currency: string;
 }
 
-const AmountWithCurrency = ({ amount, currency }: AmountWithCurrencyProps) => {
+export const AmountWithCurrency = ({
+  amount,
+  currency,
+}: AmountWithCurrencyProps) => {
   return (
     <p className="text-xl text-accent/75 font-medium">
       {amount} <span className="text-xs">{currency}</span>
@@ -45,17 +48,17 @@ const CurrencyDisplay = ({
     }
   }, [amount, fromCur]);
 
-  if (!convertedAmount) {
-    return <p className="text-center">...</p>;
-  }
-
   return (
     <div className="flex flex-row justify-around">
       <AmountWithCurrency amount={amount} currency={fromCur} />
 
-      <p>=</p>
+      {convertedAmount && (
+        <>
+          <p>=</p>
 
-      <AmountWithCurrency amount={convertedAmount} currency={toCur} />
+          <AmountWithCurrency amount={convertedAmount} currency={toCur} />
+        </>
+      )}
     </div>
   );
 };
