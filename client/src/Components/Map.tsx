@@ -35,10 +35,24 @@ const containerStyle = {
   height: "100%",
 };
 
-const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-
 const MapWrapper = ({ children, className }: MapWrapperProps) => {
   return <div className={`w-full h-72 ${className}`}>{children}</div>;
+};
+
+const libraries: "places"[] = ["places"];
+
+export const GoogleMapsProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    libraries,
+  });
+
+  if (!isLoaded) return <div>Loading map...</div>;
+
+  return <>{children}</>;
 };
 
 export const DisplayMap = ({ markers }: DisplayMapProps) => {
@@ -46,14 +60,9 @@ export const DisplayMap = ({ markers }: DisplayMapProps) => {
     null
   );
 
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
-  });
-
   const onLoad = React.useCallback((map: any) => map.setZoom(12), []);
 
-  return isLoaded ? (
+  return (
     <MapWrapper>
       <GoogleMap
         mapContainerStyle={containerStyle}
@@ -61,9 +70,9 @@ export const DisplayMap = ({ markers }: DisplayMapProps) => {
         onLoad={onLoad}
       >
         {/* Child components, such as markers, info windows, etc. */}
-        {markers.map((marker) => (
+        {markers.map((marker, index) => (
           <MarkerF
-            key={marker.name}
+            key={`${marker.name}${index}`}
             position={{
               lat: marker.lat,
               lng: marker.lng,
@@ -79,7 +88,7 @@ export const DisplayMap = ({ markers }: DisplayMapProps) => {
 
         {selectedMarker && (
           <InfoWindowF
-            key={selectedMarker?.name}
+            key={`selectedMarker?.name`}
             position={{
               lat: selectedMarker?.lat,
               lng: selectedMarker?.lng,
@@ -93,12 +102,8 @@ export const DisplayMap = ({ markers }: DisplayMapProps) => {
         )}
       </GoogleMap>
     </MapWrapper>
-  ) : (
-    <></>
   );
 };
-
-const libraries: "places"[] = ["places"];
 
 export const LocationPickerMap = ({
   onLocationSelect,
@@ -119,12 +124,6 @@ export const LocationPickerMap = ({
   const autocompleteRef = React.useRef<google.maps.places.Autocomplete | null>(
     null
   );
-
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
-    libraries,
-  });
 
   const onPlaceChanged = () => {
     if (autocompleteRef.current) {
@@ -150,8 +149,6 @@ export const LocationPickerMap = ({
       });
     }
   }, [country]);
-
-  if (!isLoaded) return <div>Loading map...</div>;
 
   return (
     <div className="w-full flex flex-col gap-y-2">

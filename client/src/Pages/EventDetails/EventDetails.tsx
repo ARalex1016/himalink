@@ -39,8 +39,6 @@ const EventDetails = () => {
   const [loading, setLoading] = useState(true);
   // const [error, setError] = useState<string | null>(null);
 
-  console.log(event);
-
   useEffect(() => {
     if (!eventId) return;
 

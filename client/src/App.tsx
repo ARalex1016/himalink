@@ -7,6 +7,8 @@ import { initAuthListener } from "./Store/useAuthStore";
 // Route
 import router from "./Routes/routes";
 
+import { GoogleMapsProvider } from "./Components/Map";
+
 function App() {
   useEffect(() => {
     initAuthListener();
@@ -14,7 +16,9 @@ function App() {
 
   return (
     <>
-      <RouterProvider router={router} />
+      <GoogleMapsProvider>
+        <RouterProvider router={router} />
+      </GoogleMapsProvider>
     </>
   );
 }
