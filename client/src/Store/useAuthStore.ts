@@ -132,6 +132,8 @@ export const initAuthListener = () => {
           name: data.country_name,
           code: data.country,
           currency: data.currency,
+          lng: data.longitude,
+          lat: data.latitude,
         });
       } catch (error: any) {
         AlertBox({

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState } from "react";
 
 // Layout
 import Layout from "../../Layout/Layout";
@@ -8,50 +8,64 @@ import useEventStore from "../../Store/useEventStore";
 
 // Components
 import { Title } from "../../Components/Text";
+import { LocationPickerMap } from "../../Components/Map";
+import AlertBox from "../../Components/AlertBox";
 
 // Firebase
-import { Timestamp } from "firebase/firestore";
+// import { Timestamp } from "firebase/firestore";
 
 // Type
-import type { Event } from "../../type";
+import type { Location } from "../../type";
+
+interface LocationWithDetails extends Location {
+  additionalDetails?: string;
+}
 
 const CreateEvent = () => {
   const { createEvent } = useEventStore();
 
-  let event: Event = {
-    title: "Tihar",
-    organizerId: "jds",
-    coverImageURL:
-      "https://www.google.com/url?sa=i&url=https%3A%2F%2Fntb.gov.np%2Ftihar&psig=AOvVaw2y5RnY8P078VlG7VYkdK4H&ust=1757774355838000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJDf9vO5048DFQAAAAAdAAAAABAE",
-    shortDescription: "Tihar is the 2nd main festival of Nepal.",
-    category: "cultural",
-    date_Time: {
-      startAt: Timestamp.fromDate(new Date("2025-10-25T08:00:00.000Z")),
-      endAt: Timestamp.fromDate(new Date("2025-10-25T18:30:00.000Z")),
-    },
-    location: {
-      lat: 44.4268,
-      lng: 26.1025,
-      address: "Romania, Bucharest",
-      placeName: "Sector 10",
-      googlePlaceId: "63728ndb",
-    },
-    ticket: {
-      amount: 200,
-      currency: "RON",
-    },
-    capacity: 400,
-    seatsAvailable: 300,
-    status: "published",
-  };
+  const [location, setLocation] = useState<LocationWithDetails | null>(null);
 
-  useEffect(() => {
-    createEvent(event);
-  }, []);
+  const handleSave = () => {
+    if (!location)
+      return AlertBox({
+        title: "Error",
+        text: "Please select a location",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+  };
 
   return (
     <Layout>
       <Title title="Create Event" />
+
+      <LocationPickerMap onLocationSelect={setLocation} />
+
+      {location?.address && location?.lat && location?.lng && (
+        <textarea
+          value={location?.additionalDetails || ""}
+          onChange={(e) =>
+            setLocation(
+              (pre) =>
+                ({
+                  ...pre,
+                  additionalDetails: e.target.value,
+                } as LocationWithDetails)
+            )
+          }
+          placeholder="Apartment, floor, building, or landmark (optional)"
+          rows={3}
+          className="text-sm border rounded p-2 w-full mt-2 resize-none"
+        />
+      )}
+
+      <button
+        onClick={handleSave}
+        className="bg-blue-600 text-white px-4 py-2 rounded"
+      >
+        Save Event
+      </button>
     </Layout>
   );
 };

@@ -34,6 +34,11 @@
   border-radius: inherit;
 }
 
+.rounded-l-inherit {
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
+}
+
 .rounded-t-inherit {
   border-top-right-radius: inherit;
   border-top-left-radius: inherit;
@@ -61,6 +66,20 @@
 }
 
 /* Scroll bar Customization End */
+
+/* Force InfoWindow : Google Maps light mode Start */
+
+.gm-style-iw {
+  background-color: white !important;
+  color: black !important;
+  border-radius: 8px !important;
+}
+
+.gm-ui-hover-effect > span {
+  filter: invert(1); /* make close X visible in dark mode */
+}
+
+/* Force InfoWindow : Google Maps light mode End */
 
 /* Sign in with Googole Button CSS Start */
 

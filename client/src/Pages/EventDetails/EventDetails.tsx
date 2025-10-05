@@ -7,6 +7,7 @@ import Layout from "../../Layout/Layout";
 // Components
 import { BackButton } from "../../Components/Button";
 import CurrencyDisplay from "../../Components/CurrencyDisplay";
+import { DisplayMap } from "../../Components/Map";
 
 // Icons
 import LocationIcon from "./../../assets/icons/location.svg";
@@ -129,6 +130,8 @@ const EventDetails = () => {
           <span>To {formatTime(event?.date_Time?.endAt.toDate())}</span>
         </IconText>
       </div>
+
+      {event?.location && <DisplayMap markers={[event?.location]} />}
     </Layout>
   );
 };

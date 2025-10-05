@@ -6,6 +6,8 @@ export interface Country {
   name: string;
   code: string;
   currency: string;
+  lng?: number;
+  lat?: number;
 }
 
 export interface User {
@@ -24,9 +26,8 @@ export interface User {
 export interface Location {
   lat: number;
   lng: number;
-  placeName?: string;
+  name?: string;
   address?: string;
-  googlePlaceId?: string;
 }
 
 export interface EventStats {
