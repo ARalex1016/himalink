@@ -110,9 +110,9 @@ export const LocationPickerMap = ({
   const [selectedPosition, setSelectedPosition] =
     React.useState<Marker>(defaultLocation);
 
-  const [address, setAddress] = React.useState("");
+  const [_address, setAddress] = React.useState("");
 
-  const [name, setName] = React.useState("");
+  const [_name, setName] = React.useState("");
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 

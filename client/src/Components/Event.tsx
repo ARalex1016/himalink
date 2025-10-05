@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import type { Event } from "../type";
 
 // Components
-import { ClockIcons } from "./Icon";
 import { AmountWithCurrency } from "./CurrencyDisplay";
 
 // Icons
@@ -14,12 +13,7 @@ import UsersGroupIcon from "./../assets/icons/user-group.svg";
 import { IconText } from "./Icon";
 
 // Utils
-import {
-  formatDate,
-  formatTime,
-  formatHour,
-  getDayFromISODate,
-} from "./../Utils/DateManager";
+import { formatDate, getDayFromISODate } from "./../Utils/DateManager";
 import { capitalizeFirstLetter } from "../Utils/StringManager";
 
 interface EventProps {

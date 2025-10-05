@@ -4,7 +4,7 @@ import { useState } from "react";
 import Layout from "../../Layout/Layout";
 
 // Store
-import useEventStore from "../../Store/useEventStore";
+// import useEventStore from "../../Store/useEventStore";
 
 // Components
 import { Title } from "../../Components/Text";
@@ -22,7 +22,7 @@ interface LocationWithDetails extends Location {
 }
 
 const CreateEvent = () => {
-  const { createEvent } = useEventStore();
+  // const { createEvent } = useEventStore();
 
   const [location, setLocation] = useState<LocationWithDetails | null>(null);
 
