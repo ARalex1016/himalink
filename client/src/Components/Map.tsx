@@ -35,7 +35,7 @@ const containerStyle = {
   height: "100%",
 };
 
-const GOOGLE_MAPS_API_KEY = import.meta.env.GOOGLE_MAPS_API_KEY;
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 const MapWrapper = ({ children, className }: MapWrapperProps) => {
   return <div className={`w-full h-72 ${className}`}>{children}</div>;
