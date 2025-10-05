@@ -35,7 +35,7 @@ const containerStyle = {
   height: "100%",
 };
 
-const REACT_API_GOOGLE_MAPS_API_KEY = "AIzaSyA75ltw3MeMHuhJjoTU_r_tXN-Fnp2wTfY";
+const GOOGLE_MAPS_API_KEY = import.meta.env.GOOGLE_MAPS_API_KEY;
 
 const MapWrapper = ({ children, className }: MapWrapperProps) => {
   return <div className={`w-full h-72 ${className}`}>{children}</div>;
@@ -48,7 +48,7 @@ export const DisplayMap = ({ markers }: DisplayMapProps) => {
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: REACT_API_GOOGLE_MAPS_API_KEY,
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
   });
 
   const onLoad = React.useCallback((map: any) => map.setZoom(12), []);
@@ -122,7 +122,7 @@ export const LocationPickerMap = ({
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: REACT_API_GOOGLE_MAPS_API_KEY,
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
     libraries,
   });
 
