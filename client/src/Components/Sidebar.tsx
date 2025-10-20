@@ -126,7 +126,7 @@ const Sidebar = memo(({ menuButtonRef }: SidebarProps) => {
                 src={item.icon}
                 alt={item.name}
                 className={`${
-                  pathname === item.link ? "!invert-0" : "!invert-50"
+                  pathname === item.link ? "!invert-100" : "!invert-50"
                 } transition-all duration-300`}
               />
             </span>

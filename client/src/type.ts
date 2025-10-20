@@ -97,3 +97,4 @@ export interface UserScans {
   scannedAt: Timestamp;
   status: "checked-in" | "revoked";
 }
+

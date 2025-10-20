@@ -149,6 +149,7 @@ const Header = ({ menuButtonRef, className }: HeaderProps) => {
           src={MenuIcon}
           alt="Menu Icon"
           onClick={toggleSidebar}
+          className="hover:invert-100"
         />
 
         <h2 className="text-lg xs:text-xl font-medium text-accent/75">
@@ -182,15 +183,13 @@ const Header = ({ menuButtonRef, className }: HeaderProps) => {
               : "outline-none"
           }`}
         >
-          {user?.photoURL ? (
-            <BaseIcon
-              src={user?.photoURL}
-              alt="Profile"
-              className="!invert-0 size-full"
-            />
-          ) : (
-            <BaseIcon src={AvatarIcon} alt="Avatar" className="invert-25" />
-          )}
+          <BaseIcon
+            src={user?.photoURL || AvatarIcon}
+            alt="Profile"
+            className={`${
+              user?.photoURL ? "!invert-0 size-full" : "!invert-25"
+            } `}
+          />
         </div>
       </div>
 

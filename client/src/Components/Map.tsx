@@ -41,8 +41,10 @@ const MapWrapper = ({ children, className }: MapWrapperProps) => {
 
 const libraries: "places"[] = ["places"];
 
-export const GoogleMapsProvider: React.FC<{ children: React.ReactNode }> = ({
+export const GoogleMapsProvider = ({
   children,
+}: {
+  children: (isLoaded: boolean) => React.ReactNode;
 }) => {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
@@ -50,9 +52,16 @@ export const GoogleMapsProvider: React.FC<{ children: React.ReactNode }> = ({
     libraries,
   });
 
-  if (!isLoaded) return <div>Loading map...</div>;
-
-  return <>{children}</>;
+  return (
+    <>
+      {!isLoaded && (
+        <div className="flex items-center justify-center w-full h-full text-sm text-gray-500 bg-gray-100 rounded">
+          Loading map...
+        </div>
+      )}
+      {isLoaded && children(isLoaded)}
+    </>
+  );
 };
 
 export const DisplayMap = ({ markers }: DisplayMapProps) => {
@@ -60,47 +69,46 @@ export const DisplayMap = ({ markers }: DisplayMapProps) => {
     null
   );
 
-  const onLoad = React.useCallback((map: any) => map.setZoom(12), []);
-
   return (
     <MapWrapper>
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={markers[0] || { lat: 0, lng: 0 }}
-        onLoad={onLoad}
-      >
-        {/* Child components, such as markers, info windows, etc. */}
-        {markers.map((marker, index) => (
-          <MarkerF
-            key={`${marker.name}${index}`}
-            position={{
-              lat: marker.lat,
-              lng: marker.lng,
-            }}
-            icon={{
-              url: MarkerRegularBlueIcon,
-              scaledSize: new google.maps.Size(40, 40),
-              anchor: new google.maps.Point(20, 40),
-            }}
-            onClick={() => setSelectedMarker(marker)}
-          />
-        ))}
+      <GoogleMapsProvider>
+        {(isLoaded) =>
+          isLoaded && (
+            <GoogleMap
+              mapContainerStyle={containerStyle}
+              center={markers[0] || { lat: 0, lng: 0 }}
+              zoom={12}
+            >
+              {markers.map((marker, index) => (
+                <MarkerF
+                  key={`${marker.name}${index}`}
+                  position={{ lat: marker.lat, lng: marker.lng }}
+                  icon={{
+                    url: MarkerRegularBlueIcon,
+                    scaledSize: new google.maps.Size(40, 40),
+                    anchor: new google.maps.Point(20, 40),
+                  }}
+                  onClick={() => setSelectedMarker(marker)}
+                />
+              ))}
 
-        {selectedMarker && (
-          <InfoWindowF
-            key={`selectedMarker?.name`}
-            position={{
-              lat: selectedMarker?.lat,
-              lng: selectedMarker?.lng,
-            }}
-            onCloseClick={() => setSelectedMarker(null)}
-          >
-            <div className="text-sm">
-              {selectedMarker?.name || "Selected Location"}
-            </div>
-          </InfoWindowF>
-        )}
-      </GoogleMap>
+              {selectedMarker && (
+                <InfoWindowF
+                  position={{
+                    lat: selectedMarker.lat,
+                    lng: selectedMarker.lng,
+                  }}
+                  onCloseClick={() => setSelectedMarker(null)}
+                >
+                  <div className="text-sm">
+                    {selectedMarker?.name || "Selected Location"}
+                  </div>
+                </InfoWindowF>
+              )}
+            </GoogleMap>
+          )
+        }
+      </GoogleMapsProvider>
     </MapWrapper>
   );
 };
@@ -109,101 +117,80 @@ export const LocationPickerMap = ({
   onLocationSelect,
 }: LocationPickerProps) => {
   const { country } = useAuthStore();
-
   const defaultLocation = { lat: 27.7172, lng: 85.324 };
-
   const [selectedPosition, setSelectedPosition] =
     React.useState<Marker>(defaultLocation);
-
-  const [_address, setAddress] = React.useState("");
-
-  const [_name, setName] = React.useState("");
-
-  const inputRef = React.useRef<HTMLInputElement | null>(null);
-
   const autocompleteRef = React.useRef<google.maps.places.Autocomplete | null>(
     null
   );
-
-  const onPlaceChanged = () => {
-    if (autocompleteRef.current) {
-      const place = autocompleteRef.current.getPlace();
-      if (place.geometry && place.geometry.location) {
-        const lat = place.geometry.location.lat();
-        const lng = place.geometry.location.lng();
-        const address = place.formatted_address || "";
-        const name = place.name || "";
-        setSelectedPosition({ lat, lng });
-        setAddress(address);
-        setName(name);
-        onLocationSelect({ lat, lng, address, name });
-      }
-    }
-  };
-
-  React.useEffect(() => {
-    if (country?.lat && country?.lng) {
-      setSelectedPosition({
-        lat: country.lat,
-        lng: country.lng,
-      });
-    }
-  }, [country]);
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   return (
     <div className="w-full flex flex-col gap-y-2">
-      <MapWrapper>
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={selectedPosition}
-          zoom={14}
-        >
-          <MarkerF
-            position={selectedPosition}
-            icon={{
-              url: MarkerRegularBlueIcon,
-              scaledSize: new google.maps.Size(40, 40),
-              anchor: new google.maps.Point(20, 40),
-            }}
-          />
-        </GoogleMap>
-      </MapWrapper>
+      <GoogleMapsProvider>
+        {(isLoaded) =>
+          isLoaded && (
+            <>
+              {/* Map */}
+              <MapWrapper>
+                <GoogleMap
+                  mapContainerStyle={containerStyle}
+                  center={selectedPosition}
+                  zoom={14}
+                >
+                  <MarkerF
+                    position={selectedPosition}
+                    icon={{
+                      url: MarkerRegularBlueIcon,
+                      scaledSize: new google.maps.Size(40, 40),
+                      anchor: new google.maps.Point(20, 40),
+                    }}
+                  />
+                </GoogleMap>
+              </MapWrapper>
 
-      <Autocomplete
-        onLoad={(auto) => (autocompleteRef.current = auto)}
-        onPlaceChanged={onPlaceChanged}
-      >
-        <div className="flex flex-row border rounded-md overflow-hidden">
-          <input
-            ref={inputRef}
-            id="place-autocomplete"
-            type="text"
-            placeholder="Search location..."
-            className="p-2 w-full rounded-l-inherit"
-          />
-
-          <img
-            src={CloseIcon}
-            alt="X Icon"
-            title="Clear"
-            onClick={() => {
-              setAddress("");
-              setName("");
-              setSelectedPosition(defaultLocation);
-              onLocationSelect(defaultLocation);
-
-              if (inputRef.current) {
-                inputRef.current.value = ""; // <-- clear the field
-              }
-            }}
-            className="bg-red-500/75 p-2 hover:bg-red-500 cursor-pointer"
-          />
-        </div>
-      </Autocomplete>
-
-      {/* <div className="text-sm text-gray-700">
-        <b>Selected Address:</b> {address || "None selected"}
-      </div> */}
+              {/* Autocomplete input */}
+              <Autocomplete
+                onLoad={(auto) => (autocompleteRef.current = auto)}
+                onPlaceChanged={() => {
+                  if (autocompleteRef.current) {
+                    const place = autocompleteRef.current.getPlace();
+                    if (place.geometry?.location) {
+                      const lat = place.geometry.location.lat();
+                      const lng = place.geometry.location.lng();
+                      const address = place.formatted_address || "";
+                      const name = place.name || "";
+                      const newPos = { lat, lng, address, name };
+                      setSelectedPosition(newPos);
+                      onLocationSelect(newPos);
+                    }
+                  }
+                }}
+              >
+                <div className="flex flex-row border rounded-md overflow-hidden">
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    placeholder="Search location..."
+                    className="p-2 w-full rounded-l-inherit"
+                  />
+                  <img
+                    src={CloseIcon}
+                    alt="X Icon"
+                    title="Clear"
+                    onClick={() => {
+                      setSelectedPosition(defaultLocation);
+                      onLocationSelect(defaultLocation);
+                      if (inputRef.current) inputRef.current.value = "";
+                    }}
+                    className="bg-red-500/75 p-2 hover:bg-red-500 cursor-pointer"
+                  />
+                </div>
+              </Autocomplete>
+            </>
+          )
+        }
+      </GoogleMapsProvider>
     </div>
   );
 };
