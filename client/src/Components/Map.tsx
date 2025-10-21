@@ -14,20 +14,23 @@ import CloseIcon from "./../assets/icons/close.svg";
 // Type
 import type { Location as Marker } from "../type";
 
-// Store
-import useAuthStore from "../Store/useAuthStore";
-
 interface DisplayMapProps {
   markers: Marker[];
 }
 
 interface LocationPickerProps {
-  onLocationSelect: (location: Marker) => void;
+  onLocationSelect: (location: Marker | null) => void;
+  children: React.ReactNode;
 }
 
 interface MapWrapperProps {
   children: React.ReactNode;
   className?: string;
+}
+
+interface MarkerPosition extends google.maps.LatLngLiteral {
+  address?: string;
+  name?: string;
 }
 
 const containerStyle = {
@@ -115,11 +118,13 @@ export const DisplayMap = ({ markers }: DisplayMapProps) => {
 
 export const LocationPickerMap = ({
   onLocationSelect,
+  children,
 }: LocationPickerProps) => {
-  const { country } = useAuthStore();
-  const defaultLocation = { lat: 27.7172, lng: 85.324 };
+  const defaultCenter = { lat: 28.3949, lng: 84.124 }; // 🇳🇵 Nepal center
+
   const [selectedPosition, setSelectedPosition] =
-    React.useState<Marker>(defaultLocation);
+    React.useState<MarkerPosition | null>(null);
+
   const autocompleteRef = React.useRef<google.maps.places.Autocomplete | null>(
     null
   );
@@ -131,25 +136,6 @@ export const LocationPickerMap = ({
         {(isLoaded) =>
           isLoaded && (
             <>
-              {/* Map */}
-              <MapWrapper>
-                <GoogleMap
-                  mapContainerStyle={containerStyle}
-                  center={selectedPosition}
-                  zoom={14}
-                >
-                  <MarkerF
-                    position={selectedPosition}
-                    icon={{
-                      url: MarkerRegularBlueIcon,
-                      scaledSize: new google.maps.Size(40, 40),
-                      anchor: new google.maps.Point(20, 40),
-                    }}
-                  />
-                </GoogleMap>
-              </MapWrapper>
-
-              {/* Autocomplete input */}
               <Autocomplete
                 onLoad={(auto) => (autocompleteRef.current = auto)}
                 onPlaceChanged={() => {
@@ -167,26 +153,50 @@ export const LocationPickerMap = ({
                   }
                 }}
               >
-                <div className="flex flex-row border rounded-md overflow-hidden">
+                <div className="flex flex-row border border-white rounded-md overflow-hidden">
                   <input
                     ref={inputRef}
                     type="text"
                     placeholder="Search location..."
-                    className="p-2 w-full rounded-l-inherit"
+                    className="text-white p-2 w-full rounded-l-inherit"
                   />
                   <img
                     src={CloseIcon}
                     alt="X Icon"
                     title="Clear"
                     onClick={() => {
-                      setSelectedPosition(defaultLocation);
-                      onLocationSelect(defaultLocation);
+                      setSelectedPosition(null);
+                      onLocationSelect(null);
                       if (inputRef.current) inputRef.current.value = "";
                     }}
                     className="bg-red-500/75 p-2 hover:bg-red-500 cursor-pointer"
                   />
                 </div>
               </Autocomplete>
+
+              {children}
+
+              <MapWrapper>
+                <GoogleMap
+                  mapContainerStyle={containerStyle}
+                  center={
+                    (selectedPosition ??
+                      defaultCenter) as google.maps.LatLngLiteral
+                  }
+                  zoom={selectedPosition ? 14 : 4}
+                >
+                  {selectedPosition && (
+                    <MarkerF
+                      position={selectedPosition}
+                      icon={{
+                        url: MarkerRegularBlueIcon,
+                        scaledSize: new google.maps.Size(40, 40),
+                        anchor: new google.maps.Point(20, 40),
+                      }}
+                    />
+                  )}
+                </GoogleMap>
+              </MapWrapper>
             </>
           )
         }
