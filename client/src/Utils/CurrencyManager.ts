@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_KEY = "6e02284edc8e34aeb0e0984d";
+const API_KEY = import.meta.env.VITE_EXCHANGE_RATE_API_KEY;
 
 export interface ConversionResult {
   success: boolean;

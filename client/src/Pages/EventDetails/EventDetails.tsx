@@ -96,9 +96,9 @@ const EventDetails = () => {
           <IconText src={DateIcon} alt="Date">
             <span>
               {event?.date_Time?.startAt
-                ? `${getDayFromISODate(
-                    event.date_Time.startAt.toDate()
-                  )}, ${formatDate(event.date_Time.startAt.toDate())}`
+                ? `${getDayFromISODate(event.date_Time.startAt)}, ${formatDate(
+                    event.date_Time.startAt
+                  )}`
                 : "Date not available"}
             </span>
           </IconText>
@@ -123,17 +123,17 @@ const EventDetails = () => {
           </button>
 
           <IconText
-            src={ClockIcons[formatHour(event?.date_Time?.startAt.toDate())]}
+            src={ClockIcons[formatHour(event?.date_Time?.startAt)]}
             alt="Start Hour"
           >
-            <span>From {formatTime(event?.date_Time?.startAt.toDate())}</span>
+            <span>From {formatTime(event?.date_Time?.startAt)}</span>
           </IconText>
 
           <IconText
-            src={ClockIcons[formatHour(event?.date_Time?.endAt.toDate())]}
+            src={ClockIcons[formatHour(event?.date_Time?.endAt)]}
             alt="End Hour"
           >
-            <span>To {formatTime(event?.date_Time?.endAt.toDate())}</span>
+            <span>To {formatTime(event?.date_Time?.endAt)}</span>
           </IconText>
 
           <IconText src={LocationIcon} alt="Location">

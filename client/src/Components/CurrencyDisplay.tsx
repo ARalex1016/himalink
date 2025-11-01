@@ -54,7 +54,7 @@ const CurrencyDisplay = ({
 
       {convertedAmount && (
         <>
-          <p>=</p>
+          <p className="text-white/75">=</p>
 
           <AmountWithCurrency amount={convertedAmount} currency={toCur} />
         </>

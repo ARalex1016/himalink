@@ -1,7 +1,14 @@
 import { useState } from "react";
 
+interface Step {
+  id: string;
+  label: string;
+  component: (props?: any) => React.ReactNode; // or React.FC<SomeProps>
+  schema: any;
+}
+
 interface useMultiStepFormProps {
-  steps: React.ReactNode[];
+  steps: Step[];
 }
 
 export const useMultiStepForm = ({ steps }: useMultiStepFormProps) => {

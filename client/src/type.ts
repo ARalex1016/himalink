@@ -38,16 +38,15 @@ export interface EventStats {
 
 export interface Event {
   id?: string;
-  organizerId: string;
+  organizerId?: string;
   title: string;
   coverImageURL: string;
-  gallery?: string[];
   shortDescription: string;
   longDescription?: string;
   category: string;
   date_Time: {
-    startAt: Timestamp;
-    endAt: Timestamp;
+    startAt: Date;
+    endAt: Date;
   }; // ISO string
   location: Location;
   ticket: {
@@ -55,9 +54,9 @@ export interface Event {
     currency: string;
   };
   capacity: number;
-  seatsAvailable: number;
+  seatsAvailable?: number;
   coordinators?: string[]; // coordinators id array
-  status: "draft" | "published" | "cancelled";
+  status?: "draft" | "published" | "cancelled";
   stats?: EventStats;
   createdAt?: Timestamp;
   updatedAt?: Timestamp;
@@ -97,4 +96,3 @@ export interface UserScans {
   scannedAt: Timestamp;
   status: "checked-in" | "revoked";
 }
-

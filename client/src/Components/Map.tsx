@@ -6,6 +6,8 @@ import {
   InfoWindowF,
   Autocomplete,
 } from "@react-google-maps/api";
+import { useFormContext } from "react-hook-form";
+import type { UseFormSetValue, FieldPath } from "react-hook-form";
 
 // Icons
 import MarkerRegularBlueIcon from "./../assets/icons/marker-icons/marker-regular-blue.svg";
@@ -13,14 +15,16 @@ import CloseIcon from "./../assets/icons/close.svg";
 
 // Type
 import type { Location as Marker } from "../type";
+import type { LocationInfoStepSchema } from "../Pages/CreateEvent/LocationStep";
 
 interface DisplayMapProps {
   markers: Marker[];
 }
 
 interface LocationPickerProps {
-  onLocationSelect: (location: Marker | null) => void;
-  children: React.ReactNode;
+  setValue: UseFormSetValue<LocationInfoStepSchema>;
+  fieldName: FieldPath<LocationInfoStepSchema>;
+  children?: React.ReactNode;
 }
 
 interface MapWrapperProps {
@@ -43,6 +47,20 @@ const MapWrapper = ({ children, className }: MapWrapperProps) => {
 };
 
 const libraries: "places"[] = ["places"];
+
+// Type guard
+const isLocationObject = (
+  value: unknown
+): value is { lat: number; lng: number; name: string; address: string } => {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "lat" in value &&
+    "lng" in value &&
+    "name" in value &&
+    "address" in value
+  );
+};
 
 export const GoogleMapsProvider = ({
   children,
@@ -117,18 +135,48 @@ export const DisplayMap = ({ markers }: DisplayMapProps) => {
 };
 
 export const LocationPickerMap = ({
-  onLocationSelect,
+  setValue,
+  fieldName,
   children,
 }: LocationPickerProps) => {
-  const defaultCenter = { lat: 28.3949, lng: 84.124 }; // 🇳🇵 Nepal center
+  const { watch } = useFormContext<LocationInfoStepSchema>();
 
-  const [selectedPosition, setSelectedPosition] =
-    React.useState<MarkerPosition | null>(null);
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   const autocompleteRef = React.useRef<google.maps.places.Autocomplete | null>(
     null
   );
-  const inputRef = React.useRef<HTMLInputElement | null>(null);
+
+  // Watch form value
+  const locationValue = watch(fieldName);
+
+  const defaultCenter = { lat: 28.3949, lng: 84.124 }; // 🇳🇵 Nepal center
+
+  // Update form when selecting a place
+  const handlePlaceChanged = () => {
+    if (!autocompleteRef.current) return;
+
+    const place = autocompleteRef.current.getPlace();
+    if (!place?.geometry?.location) return;
+
+    const lat = place.geometry.location.lat();
+    const lng = place.geometry.location.lng();
+    const name = place.name || "";
+    const address = place.formatted_address || "";
+
+    setValue(fieldName, { lat, lng, name, address });
+  };
+
+  // Clear location
+  const handleClear = () => {
+    setValue(fieldName, {
+      lat: defaultCenter.lat,
+      lng: defaultCenter.lng,
+      name: "",
+      address: "",
+    });
+    if (inputRef.current) inputRef.current.value = "";
+  };
 
   return (
     <div className="w-full flex flex-col gap-y-2">
@@ -138,37 +186,26 @@ export const LocationPickerMap = ({
             <>
               <Autocomplete
                 onLoad={(auto) => (autocompleteRef.current = auto)}
-                onPlaceChanged={() => {
-                  if (autocompleteRef.current) {
-                    const place = autocompleteRef.current.getPlace();
-                    if (place.geometry?.location) {
-                      const lat = place.geometry.location.lat();
-                      const lng = place.geometry.location.lng();
-                      const address = place.formatted_address || "";
-                      const name = place.name || "";
-                      const newPos = { lat, lng, address, name };
-                      setSelectedPosition(newPos);
-                      onLocationSelect(newPos);
-                    }
-                  }
-                }}
+                onPlaceChanged={handlePlaceChanged}
               >
-                <div className="flex flex-row border border-white rounded-md overflow-hidden">
+                <div className="flex flex-row bg-transparent border border-white/25 rounded-md text-white/75 focus:border-white overflow-hidden">
                   <input
                     ref={inputRef}
                     type="text"
                     placeholder="Search location..."
-                    className="text-white p-2 w-full rounded-l-inherit"
+                    defaultValue={
+                      isLocationObject(locationValue)
+                        ? `${locationValue.name}, ${locationValue.address}`
+                        : ""
+                    }
+                    className="text-white px-4 w-full rounded-l-inherit"
                   />
+
                   <img
                     src={CloseIcon}
                     alt="X Icon"
                     title="Clear"
-                    onClick={() => {
-                      setSelectedPosition(null);
-                      onLocationSelect(null);
-                      if (inputRef.current) inputRef.current.value = "";
-                    }}
+                    onClick={handleClear}
                     className="bg-red-500/75 p-2 hover:bg-red-500 cursor-pointer"
                   />
                 </div>
@@ -180,14 +217,18 @@ export const LocationPickerMap = ({
                 <GoogleMap
                   mapContainerStyle={containerStyle}
                   center={
-                    (selectedPosition ??
-                      defaultCenter) as google.maps.LatLngLiteral
+                    isLocationObject(locationValue)
+                      ? { lat: locationValue.lat, lng: locationValue.lng }
+                      : defaultCenter
                   }
-                  zoom={selectedPosition ? 14 : 4}
+                  zoom={isLocationObject(locationValue) ? 14 : 4}
                 >
-                  {selectedPosition && (
+                  {isLocationObject(locationValue) && (
                     <MarkerF
-                      position={selectedPosition}
+                      position={{
+                        lat: locationValue.lat,
+                        lng: locationValue.lng,
+                      }}
                       icon={{
                         url: MarkerRegularBlueIcon,
                         scaledSize: new google.maps.Size(40, 40),

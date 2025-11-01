@@ -24,7 +24,7 @@ interface IconProps {
 export const BaseIcon = forwardRef<HTMLImageElement, IconProps>(
   ({ src, alt, onClick, className, ...rest }, ref) => {
     return (
-      <div className={`size-5 xs:size-6 rounded-full invert-25 ${className}`}>
+      <div className={`size-5 xs:size-6 rounded-full invert-50 ${className}`}>
         <img ref={ref} src={src} alt={alt} onClick={onClick} {...rest} />
       </div>
     );
