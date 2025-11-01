@@ -45,8 +45,8 @@ export interface Event {
   longDescription?: string;
   category: string;
   date_Time: {
-    startAt: Date;
-    endAt: Date;
+    startAt: Date | Timestamp;
+    endAt: Date | Timestamp;
   }; // ISO string
   location: Location;
   ticket: {
