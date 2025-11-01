@@ -2,7 +2,7 @@ import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
 // Type
-import type { Location } from "../../type";
+// import type { Location } from "../../type";
 
 // Components
 import { LocationPickerMap } from "../../Components/Map";
@@ -15,9 +15,9 @@ interface LocationStepProps {
   title: string;
 }
 
-interface LocationWithDetails extends Location {
-  additionalDetails?: string;
-}
+// interface LocationWithDetails extends Location {
+//   additionalDetails?: string;
+// }
 
 // ✅ Infer only the fields we need
 export const locationStepSchema = createEventSchema.pick({

@@ -32,10 +32,10 @@ interface MapWrapperProps {
   className?: string;
 }
 
-interface MarkerPosition extends google.maps.LatLngLiteral {
-  address?: string;
-  name?: string;
-}
+// interface MarkerPosition extends google.maps.LatLngLiteral {
+//   address?: string;
+//   name?: string;
+// }
 
 const containerStyle = {
   width: "100%",
