@@ -46,9 +46,9 @@ const EventCard = ({ event }: EventProps) => {
         <IconText src={DateIcon} alt="Date">
           <span>
             {event?.date_Time?.startAt
-              ? `${getDayFromISODate(
-                  event.date_Time.startAt.toDate()
-                )}, ${formatDate(event.date_Time.startAt.toDate())}`
+              ? `${getDayFromISODate(event.date_Time.startAt)}, ${formatDate(
+                  event.date_Time.startAt
+                )}`
               : "Date not available"}
           </span>
         </IconText>
