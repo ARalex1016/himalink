@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod"; //
 
@@ -14,12 +15,16 @@ import categories from "../../Data/category.json";
 // Utils
 import { capitalizeFirstLetter } from "../../Utils/StringManager";
 
+// Store
+import useAuthStore from "../../Store/useAuthStore";
+
 interface EventInfoStepProps {
   title: string;
 }
 
 // ✅ Infer only the fields we need
 export const eventInfoStepSchema = createEventSchema.pick({
+  organizerId: true,
   title: true,
   description: true,
   category: true,
@@ -35,6 +40,8 @@ export const EventInfoStep = ({ title }: EventInfoStepProps) => {
     watch,
     formState: { errors },
   } = useFormContext<EventInfoStepSchema>();
+
+  const { user } = useAuthStore();
 
   // // Watch the coverImageURL field
   const coverImage = watch("coverImageURL");
@@ -53,6 +60,12 @@ export const EventInfoStep = ({ title }: EventInfoStepProps) => {
 
     setValue("coverImageURL", selectedFile, { shouldValidate: true });
   };
+
+  useEffect(() => {
+    if (user && user.uid) {
+      setValue("organizerId", user?.uid);
+    }
+  }, [user, user?.uid]);
 
   return (
     <>

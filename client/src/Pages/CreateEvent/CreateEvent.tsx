@@ -5,7 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Layout from "../../Layout/Layout";
 
 // Store
-// import useEventStore from "../../Store/useEventStore";
+import useEventStore from "../../Store/useEventStore";
+import { useFileStore } from "../../Store/useFileStore";
 
 // Components
 import { EventInfoStep, eventInfoStepSchema } from "./EventInfoStep";
@@ -17,7 +18,7 @@ import {
 } from "./TicketNCapacityStep";
 import { ReviewStep } from "./ReviewStep";
 import { Title } from "../../Components/Text";
-// import AlertBox from "../../Components/AlertBox";
+import AlertBox from "../../Components/AlertBox";
 
 // Hooks
 import { useMultiStepForm } from "../../Hooks/useMultiStepForm";
@@ -29,7 +30,8 @@ import {
 } from "../../Schema/createEventSchema";
 
 const CreateEvent = () => {
-  // const { createEvent } = useEventStore();
+  const { createEvent } = useEventStore();
+  const { uploading, uploadProgress, uploadFile } = useFileStore();
 
   const methods = useForm<CreateEventType>({
     resolver: zodResolver(createEventSchema) as any,
@@ -87,28 +89,59 @@ const CreateEvent = () => {
     // next();
   };
 
-  const onSubmit = (data: CreateEventType) => {
-    console.log("Form Submitted:");
-    console.log(data);
+  const publishEvent = async (data: CreateEventType) => {
+    try {
+      await createEvent(data);
 
-    // const schemaFields = Object.keys(
-    //   createEventSchema.shape
-    // ) as (keyof CreateEventType)[];
+      AlertBox({
+        title: "Your Event has been saved",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } catch (error) {
+      console.log(error);
 
-    // const isValid = await methods.trigger(schemaFields);
+      AlertBox({
+        title: "Something went wrong",
+        text: "Try it again!",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+    }
+  };
 
-    // if (!isValid) {
-    //   console.log("Error found:");
-    //   return;
-    // }
+  const onSubmit = async (data: CreateEventType) => {
+    try {
+      await uploadFile(data.coverImageURL);
+      console.log("Uploaded");
 
-    // console.log("Form Submitted");
-    // console.log(methods.formState.errors);
+      // publishEvent(data);
+    } catch (error) {
+      console.log("Error Uploading", error);
+
+      AlertBox({
+        title: "Something went wrong",
+        text: "Try it again!",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+    }
   };
 
   return (
     <Layout>
       <Title title="Create Event" />
+
+      {uploading && (
+        <div className="absolute inset-0 bg-black/80 flex flex-col justify-center items-center z-10">
+          <p className="text-xl text-white">Uploading Image</p>
+
+          <p className="text-5xl text-white font-medium">{uploadProgress}%</p>
+        </div>
+      )}
 
       {/* Steps Display */}
       <div className="flex flex-row justify-end">

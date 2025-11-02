@@ -109,7 +109,7 @@ const EventDetails = () => {
             available
           </IconText>
 
-          <p className="text-sm">{event?.shortDescription}</p>
+          <p className="text-sm">{event?.description}</p>
 
           {event?.ticket?.amount && (
             <CurrencyDisplay

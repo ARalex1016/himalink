@@ -7,11 +7,16 @@ import Template1 from "../../EventTemplate/Template1";
 // Type
 import type { CreateEventType } from "../../Schema/createEventSchema";
 
+// Store
+import useAuthStore from "../../Store/useAuthStore";
+
 interface ReviewStepProps {
   title: string;
 }
 
 export const ReviewStep = ({ title: StepTitle }: ReviewStepProps) => {
+  const { user } = useAuthStore();
+
   const { watch } = useFormContext<CreateEventType>();
 
   const {
@@ -25,30 +30,21 @@ export const ReviewStep = ({ title: StepTitle }: ReviewStepProps) => {
     ticket,
   } = watch();
 
-  //  Generate preview URL if coverImage is a File
-  const previewCoverImage =
-    coverImageURL instanceof File
-      ? URL.createObjectURL(coverImageURL)
-      : typeof coverImageURL === "string"
-      ? coverImageURL
-      : null;
-
   return (
     <>
       <SubTitle title={StepTitle} className="!text-center font-medium" />
 
-      {previewCoverImage && (
-        <Template1
-          title={title}
-          coverImageURL={previewCoverImage}
-          shortDescription={description}
-          capacity={capacity}
-          category={category}
-          date_Time={date_Time}
-          location={location}
-          ticket={ticket}
-        />
-      )}
+      <Template1
+        title={title}
+        coverImageURL={coverImageURL}
+        organizerProfile={user?.photoURL}
+        description={description}
+        capacity={capacity}
+        category={category}
+        date_Time={date_Time}
+        location={location}
+        ticket={ticket}
+      />
 
       {/* {previewCoverImage && (
         <img

@@ -40,9 +40,8 @@ export interface Event {
   id?: string;
   organizerId?: string;
   title: string;
-  coverImageURL: string;
-  shortDescription: string;
-  longDescription?: string;
+  coverImageURL: string | File;
+  description: string;
   category: string;
   date_Time: {
     startAt: Date;

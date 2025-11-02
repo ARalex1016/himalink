@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const createEventSchema = z.object({
+  organizerId: z.string().nonempty("You are not logged in"),
   title: z
     .string()
     .nonempty("Title is required")
@@ -12,10 +13,11 @@ export const createEventSchema = z.object({
     .min(20, "Description must be at least 20 characters")
     .max(1000, "Description must not exceed 1000 characters"),
   category: z.string().min(2, "Category is required"),
-  coverImageURL: z.union([
-    z.string().url("Cover image must be a valid URL"),
-    z.instanceof(File),
-  ]),
+  // coverImageURL: z.union([
+  //   z.string().url("Cover image must be a valid URL"),
+  //   z.instanceof(File),
+  // ]),
+  coverImageURL: z.instanceof(File),
   date_Time: z
     .object({
       startAt: z
