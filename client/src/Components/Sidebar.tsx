@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 
 // Icons
 import HomeIcon from "./../assets/icons/home.svg";
-import MyEventIcon from "./../assets/icons/my-event.svg";
+import CalendarPlusIcon from "./../assets/icons/calendars-icons/calendar-plus.svg";
+import MyEventIcon from "./../assets/icons/calendars-icons/my-event.svg";
 import MyBookings from "./../assets/icons/my-booking.svg";
 import CoordinatorIcon from "./../assets/icons/coordinator.svg";
 import LogoutIcon from "./../assets/icons/logout.svg";
@@ -50,7 +51,7 @@ const Sidebar = memo(({ menuButtonRef }: SidebarProps) => {
     {
       name: "Create Events",
       link: "/events/create",
-      icon: "https://img.icons8.com/sf-black/64/calendar-plus.png",
+      icon: CalendarPlusIcon,
     },
     {
       name: "My Bokings",

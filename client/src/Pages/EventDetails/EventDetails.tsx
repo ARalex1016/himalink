@@ -10,12 +10,14 @@ import { DisplayMap } from "../../Components/Map";
 
 // Icons
 import LocationIcon from "./../../assets/icons/location.svg";
-import DateIcon from "./../../assets/icons/my-event.svg";
+import DateIcon from "./../../assets/icons/calendars-icons/my-event.svg";
 import UsersGroupIcon from "./../../assets/icons/user-group.svg";
+import AvatarImg from "./../../assets/icons/avatar.svg";
 import { IconText, ClockIcons } from "../../Components/Icon";
 
 // Store
 import useEventStore from "../../Store/useEventStore";
+import { useUserStore } from "../../Store/useUserStore";
 
 // Utils
 import {
@@ -23,19 +25,22 @@ import {
   formatTime,
   formatHour,
   getDayFromISODate,
+  toJSDate,
 } from "../../Utils/DateManager";
 import { capitalizeFirstLetter } from "../../Utils/StringManager";
 
 // Type
-import type { Event } from "../../type";
+import type { Event, User } from "../../type";
 
 const EventDetails = () => {
   const { eventId } = useParams<{ eventId: string }>();
 
   const { getEvent } = useEventStore();
+  const { getUserById } = useUserStore();
 
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
+  const [organizerDetail, setOrganizerDetail] = useState<User | null>();
   // const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -48,6 +53,12 @@ const EventDetails = () => {
 
         const currentEvent = await getEvent(eventId);
         setEvent(currentEvent);
+
+        if (currentEvent?.organizerId) {
+          let organizer = await getUserById(currentEvent?.organizerId);
+
+          setOrganizerDetail(organizer);
+        }
       } catch (err: any) {
         // setError(err.message || "Failed to fetch event");
       } finally {
@@ -78,7 +89,7 @@ const EventDetails = () => {
 
           {/* Organizer Profile */}
           <img
-            src=""
+            src={organizerDetail?.photoURL || AvatarImg}
             alt="Organizer"
             className="w-16 aspect-square bg-gray rounded-lg outline-3 outline-primary absolute left-side-spacing bottom-0 translate-y-1/2"
           />
@@ -96,9 +107,9 @@ const EventDetails = () => {
           <IconText src={DateIcon} alt="Date">
             <span>
               {event?.date_Time?.startAt
-                ? `${getDayFromISODate(event.date_Time.startAt)}, ${formatDate(
-                    event.date_Time.startAt
-                  )}`
+                ? `${getDayFromISODate(
+                    toJSDate(event.date_Time.startAt)
+                  )}, ${formatDate(toJSDate(event.date_Time.startAt))}`
                 : "Date not available"}
             </span>
           </IconText>
@@ -123,17 +134,17 @@ const EventDetails = () => {
           </button>
 
           <IconText
-            src={ClockIcons[formatHour(event?.date_Time?.startAt)]}
+            src={ClockIcons[formatHour(toJSDate(event?.date_Time?.startAt))]}
             alt="Start Hour"
           >
-            <span>From {formatTime(event?.date_Time?.startAt)}</span>
+            <span>From {formatTime(toJSDate(event?.date_Time?.startAt))}</span>
           </IconText>
 
           <IconText
-            src={ClockIcons[formatHour(event?.date_Time?.endAt)]}
+            src={ClockIcons[formatHour(toJSDate(event?.date_Time?.endAt))]}
             alt="End Hour"
           >
-            <span>To {formatTime(event?.date_Time?.endAt)}</span>
+            <span>To {formatTime(toJSDate(event?.date_Time?.endAt))}</span>
           </IconText>
 
           <IconText src={LocationIcon} alt="Location">

@@ -29,9 +29,12 @@ import {
   type CreateEventType,
 } from "../../Schema/createEventSchema";
 
+// Type
+import type { Event } from "../../type";
+
 const CreateEvent = () => {
   const { createEvent } = useEventStore();
-  const { uploading, uploadProgress, uploadFile } = useFileStore();
+  const { uploadImage } = useFileStore();
 
   const methods = useForm<CreateEventType>({
     resolver: zodResolver(createEventSchema) as any,
@@ -89,7 +92,7 @@ const CreateEvent = () => {
     // next();
   };
 
-  const publishEvent = async (data: CreateEventType) => {
+  const publishEvent = async (data: Event) => {
     try {
       await createEvent(data);
 
@@ -114,10 +117,22 @@ const CreateEvent = () => {
 
   const onSubmit = async (data: CreateEventType) => {
     try {
-      await uploadFile(data.coverImageURL);
-      console.log("Uploaded");
+      let imageUrl = await uploadImage(data.coverImageURL);
 
-      // publishEvent(data);
+      if (!imageUrl) {
+        AlertBox({
+          title: "Upload Failed",
+          icon: "error",
+        });
+        return;
+      }
+
+      const finalData: Event = {
+        ...data,
+        coverImageURL: imageUrl, // replace File with string
+      };
+
+      publishEvent(finalData);
     } catch (error) {
       console.log("Error Uploading", error);
 
@@ -134,14 +149,6 @@ const CreateEvent = () => {
   return (
     <Layout>
       <Title title="Create Event" />
-
-      {uploading && (
-        <div className="absolute inset-0 bg-black/80 flex flex-col justify-center items-center z-10">
-          <p className="text-xl text-white">Uploading Image</p>
-
-          <p className="text-5xl text-white font-medium">{uploadProgress}%</p>
-        </div>
-      )}
 
       {/* Steps Display */}
       <div className="flex flex-row justify-end">

@@ -1,49 +1,45 @@
 import { create } from "zustand";
+import axios from "axios";
 
-// Firebase
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { storage } from "../config/firebase";
+interface FileState {
+  isUploading: boolean;
+  error: string | null;
 
-interface FileStore {
-  uploading: boolean;
-  uploadProgress: number;
-  uploadFile: (file: File, folder?: string) => Promise<string | null>;
+  uploadImage: (file: File) => Promise<string | null>;
 }
 
-export const useFileStore = create<FileStore>((set) => ({
-  uploading: false,
-  uploadProgress: 0,
+export const useFileStore = create<FileState>((set) => ({
+  isUploading: false,
+  error: null,
 
-  uploadFile: async (file, folder = "uploads") => {
-    set({ uploading: true, uploadProgress: 0 });
-
+  uploadImage: async (file: File) => {
     try {
-      const fileRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
-      const uploadTask = uploadBytesResumable(fileRef, file);
+      // Restrict only image types
+      if (!file.type.startsWith("image/")) {
+        set({ error: "Only image files are allowed." });
+        return;
+      }
 
-      return new Promise((resolve, reject) => {
-        uploadTask.on(
-          "state_changed",
-          (snapshot) => {
-            const progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            set({ uploadProgress: progress });
-          },
-          (error) => {
-            console.error("Upload error:", error);
-            set({ uploading: false, uploadProgress: 0 });
-            reject(null);
-          },
-          async () => {
-            const url = await getDownloadURL(uploadTask.snapshot.ref);
-            set({ uploading: false, uploadProgress: 100 });
-            resolve(url);
-          }
-        );
+      set({ isUploading: true, error: null });
+
+      const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+      const preset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+      const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", preset);
+
+      const uploadResponse = await axios.post(uploadUrl, formData);
+
+      set({ isUploading: false });
+      return uploadResponse.data.secure_url as string;
+    } catch (err: any) {
+      set({
+        error: err?.response?.data?.error?.message || "Upload failed",
+        isUploading: false,
       });
-    } catch (err) {
-      console.error(err);
-      set({ uploading: false, uploadProgress: 0 });
       return null;
     }
   },

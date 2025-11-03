@@ -7,14 +7,19 @@ import type { Event } from "../type";
 import { AmountWithCurrency } from "./CurrencyDisplay";
 
 // Icons
-import DateIcon from "./../assets/icons/my-event.svg";
+import DateIcon from "./../assets/icons/calendars-icons/my-event.svg";
 import LocationIcon from "./../assets/icons/location.svg";
 import UsersGroupIcon from "./../assets/icons/user-group.svg";
 import { IconText } from "./Icon";
 
 // Utils
-import { formatDate, getDayFromISODate } from "./../Utils/DateManager";
+import {
+  formatDate,
+  getDayFromISODate,
+  toJSDate,
+} from "./../Utils/DateManager";
 import { capitalizeFirstLetter } from "../Utils/StringManager";
+import { getValidImageURL } from "../Utils/FileManager";
 
 interface EventProps {
   event: Event;
@@ -30,11 +35,13 @@ const EventCard = ({ event }: EventProps) => {
       }}
       className="w-80 text-white flex flex-col bg-secondary rounded-lg relative transition-all duration-300 hover:-translate-y-1"
     >
-      <img
-        src={event?.coverImageURL}
-        alt={event?.title}
-        className="w-full aspect-video bg-gray rounded-t-inherit"
-      />
+      {!!getValidImageURL(event?.coverImageURL) && (
+        <img
+          src={getValidImageURL(event?.coverImageURL)}
+          alt={event?.title}
+          className="w-full aspect-video bg-gray rounded-t-inherit"
+        />
+      )}
 
       <div className="p-4 pt-2 flex flex-col gap-y-2 rounded-inherit">
         <div className="bg-accent/60 w-fit leading-none py-[2px] rounded-lg px-2 opacity-75 hover:bg-accent/30">
@@ -46,9 +53,9 @@ const EventCard = ({ event }: EventProps) => {
         <IconText src={DateIcon} alt="Date">
           <span>
             {event?.date_Time?.startAt
-              ? `${getDayFromISODate(event.date_Time.startAt)}, ${formatDate(
-                  event.date_Time.startAt
-                )}`
+              ? `${getDayFromISODate(
+                  toJSDate(event.date_Time.startAt)
+                )}, ${formatDate(toJSDate(event.date_Time.startAt))}`
               : "Date not available"}
           </span>
         </IconText>

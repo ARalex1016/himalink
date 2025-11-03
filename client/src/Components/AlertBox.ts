@@ -7,7 +7,7 @@ interface AlertBoxProps {
   showConfirmButton?: boolean;
   confirmButtonText?: string;
   showCancelButton?: boolean;
-  timer: number;
+  timer?: number;
 }
 
 const AlertBox = async ({

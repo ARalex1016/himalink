@@ -6,12 +6,13 @@ import { collection, doc, addDoc, getDocs, getDoc } from "firebase/firestore";
 
 // Type
 import type { Event } from "../type";
+import type { CreateEventType } from "../Schema/createEventSchema";
 
 interface EventStore {
   events: Event[];
   getEvents: () => Promise<void>;
   getEvent: (eventId: string) => Promise<Event | null>;
-  createEvent: (event: Event) => Promise<void>;
+  createEvent: (event: CreateEventType | Event) => Promise<void>;
 }
 
 const useEventStore = create<EventStore>((set) => ({
@@ -49,7 +50,7 @@ const useEventStore = create<EventStore>((set) => ({
     }
   },
 
-  createEvent: async (event: Event) => {
+  createEvent: async (event) => {
     try {
       const docRef = await addDoc(collection(db, "events"), event);
 

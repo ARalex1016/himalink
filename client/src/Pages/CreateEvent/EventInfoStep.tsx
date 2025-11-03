@@ -17,6 +17,7 @@ import { capitalizeFirstLetter } from "../../Utils/StringManager";
 
 // Store
 import useAuthStore from "../../Store/useAuthStore";
+import { useFileStore } from "../../Store/useFileStore";
 
 interface EventInfoStepProps {
   title: string;
@@ -42,6 +43,7 @@ export const EventInfoStep = ({ title }: EventInfoStepProps) => {
   } = useFormContext<EventInfoStepSchema>();
 
   const { user } = useAuthStore();
+  const { isUploading } = useFileStore();
 
   // // Watch the coverImageURL field
   const coverImage = watch("coverImageURL");
@@ -78,6 +80,7 @@ export const EventInfoStep = ({ title }: EventInfoStepProps) => {
             type="file"
             id="uploader"
             accept="image/*"
+            disabled={isUploading}
             onChange={handleFileChange}
             className="text-white/60 w-full h-full px-2 absolute z-10"
           />

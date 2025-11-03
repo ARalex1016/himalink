@@ -4,13 +4,14 @@ import { create } from "zustand";
 import AlertBox from "../Components/AlertBox";
 
 // Firebase
-import { auth, googleProvider } from "../config/firebase";
+import { auth, googleProvider, db } from "../config/firebase";
 import {
   onAuthStateChanged,
   signInWithPopup,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 // Utils
 import { getUserDetailsWithIPAPI } from "../Utils/UserDetails";
@@ -33,6 +34,23 @@ interface AuthStore {
   loginManual: (data: ManualSigninData) => Promise<void>;
   logout: () => Promise<void>;
 }
+
+const createUserDocIfNotExists = async (user: User) => {
+  const userRef = doc(db, "users", user.uid);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) {
+    await setDoc(userRef, {
+      uid: user.uid,
+      displayName: user.displayName || "No Name",
+      email: user.email || "No Email",
+      emailVerified: user.emailVerified,
+      phone: user.phone || null,
+      photoURL: user.photoURL || null,
+      createdAt: new Date(),
+    });
+  }
+};
 
 const useAuthStore = create<AuthStore>((set) => ({
   user: null,
@@ -61,6 +79,9 @@ const useAuthStore = create<AuthStore>((set) => ({
         photoURL: firebaseUser.photoURL || undefined,
       };
 
+      // Create Firestore document if not exists
+      await createUserDocIfNotExists(user);
+
       set({ user });
     } catch (error: any) {
       throw new Error(error.message);
@@ -81,6 +102,9 @@ const useAuthStore = create<AuthStore>((set) => ({
         phone: firebaseUser.phoneNumber || undefined,
         photoURL: firebaseUser.photoURL || undefined,
       };
+
+      // Create Firestore document if not exists
+      await createUserDocIfNotExists(user);
 
       set({ user });
     } catch (error: any) {

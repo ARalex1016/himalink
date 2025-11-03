@@ -4,7 +4,7 @@ import { DisplayMap } from "../Components/Map";
 
 // Icons
 import LocationIcon from "./../assets/icons/location.svg";
-import DateIcon from "./../assets/icons/my-event.svg";
+import DateIcon from "./../assets/icons/calendars-icons/my-event.svg";
 import UsersGroupIcon from "./../assets/icons/user-group.svg";
 import AvatarIcon from "./../assets/icons/avatar.svg";
 import { IconText, ClockIcons } from "../Components/Icon";

@@ -1,3 +1,6 @@
+export const toJSDate = (value: any) =>
+  value instanceof Date ? value : value?.toDate ? value.toDate() : null;
+
 export const formatDate = (isoDate?: string | Date): string => {
   if (!isoDate) return "N/A";
   const date = new Date(isoDate);

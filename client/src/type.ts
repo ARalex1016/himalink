@@ -40,12 +40,12 @@ export interface Event {
   id?: string;
   organizerId?: string;
   title: string;
-  coverImageURL: string | File;
+  coverImageURL: string;
   description: string;
   category: string;
   date_Time: {
-    startAt: Date;
-    endAt: Date;
+    startAt: Date | Timestamp;
+    endAt: Date | Timestamp;
   }; // ISO string
   location: Location;
   ticket: {
